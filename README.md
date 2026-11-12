@@ -1,1 +1,371 @@
-# Amar-hisab-sn
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার হিসাব-নিকাশ</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .summary-box {
+            display: flex;
+            justify-content: space-around;
+            background: #e0e7ff;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>আমার হিসাব-নিকাশ</h1>
+
+        <!-- সামারি সেকশন -->
+        <div class="summary-box">
+            <div>মোট আয়: <span id="totalIncome">৳0</span></div>
+            <div>মোট ব্যয়: <span id="totalExpense">৳0</span></div>
+            <div>নেট ব্যালান্স: <span id="netBalance">৳0</span></div>
+        </div>
+
+        <!-- আয়-ব্যয় এন্ট্রি ফর্ম -->
+        <div class="card">
+            <h2>দৈনিক আয় ও ব্যয়</h2>
+            <div class="form-group">
+                <input type="date" id="date" required>
+                <select id="type">
+                    <option value="income">আয়</option>
+                    <option value="expense">ব্যয়</option>
+                </select>
+                <input type="text" id="category" placeholder="খাত (যেমন: বাজার, বেতন)">
+                <input type="number" id="amount" placeholder="টাকার পরিমাণ">
+                <input type="text" id="note" placeholder="বিকল্প নোট">
+            </div>
+            <button onclick="addEntry()">হিসাব যোগ করুন</button>
+        </div>
+
+        <!-- ওভারটাইম ও কাজের বিবরণ ফর্ম -->
+        <div class="card">
+            <h2>ওভারটাইম ও কাজের বিবরণ</h2>
+            <div class="form-group">
+                <input type="date" id="otDate" required>
+                <input type="number" id="otDays" placeholder="ওভারটাইম (দিন সংখ্যা)">
+                <input type="text" id="otNote" placeholder="কোথায় বা কী কাজ করেছেন (নোট)">
+            </div>
+            <button onclick="addOvertime()">ওভারটাইম যোগ করুন</button>
+        </div>
+
+        <!-- দেনা-পাওনা (লেনদেন) ফর্ম -->
+        <div class="card">
+            <h2>দেনা-পাওনা (লেনদেন হিসাব)</h2>
+            <div class="form-group">
+                <input type="text" id="partyName" placeholder="ব্যক্তির নাম">
+                <select id="txnType">
+                    <option value="given">দিয়েছি (দেনা/বাকি)</option>
+                    <option value="received">পেয়েছি/ফেরত (পাওনা)</option>
+                </select>
+                <input type="number" id="txnAmount" placeholder="টাকার পরিমাণ">
+                <input type="date" id="txnDate">
+                <input type="text" id="txnNote" placeholder="মন্তব্য বা বিবরণ">
+            </div>
+            <button onclick="addTransaction()">লেনদেন যোগ করুন</button>
+        </div>
+
+        <!-- টেবিল সেকশনসমূহ -->
+        <div class="card">
+            <h2>আয়-ব্যয়ের তালিকা</h2>
+            <table id="entryTable">
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>ধরন</th>
+                        <th>খাত</th>
+                        <th>টাকা</th>
+                        <th>নোট</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="entryList"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>ওভারটাইম ও কাজের রেকর্ড</h2>
+            <table id="otTable">
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>ওভারটাইম (দিন)</th>
+                        <th>কাজের বিবরণী (নোট)</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="otList"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>দেনা-পাওনার তালিকা</h2>
+            <table id="txnTable">
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>নাম</th>
+                        <th>অবস্থা</th>
+                        <th>টাকা</th>
+                        <th>নোট</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="txnList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ডাটা লোড বা ইনিশিয়ালাইজ করা
+        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+        let overtimes = JSON.parse(localStorage.getItem('overtimes')) || [];
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        function saveData() {
+            localStorage.setItem('entries', JSON.stringify(entries));
+            localStorage.setItem('overtimes', JSON.stringify(overtimes));
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            displayAll();
+        }
+
+        // আয়-ব্যয় যোগ করার ফাংশন
+        function addEntry() {
+            const date = document.getElementById('date').value;
+            const type = document.getElementById('type').value;
+            const category = document.getElementById('category').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const note = document.getElementById('note').value;
+
+            if (!date || !category || isNaN(amount)) {
+                alert('দয়া করে সব ফিল্ড সঠিকভাবে পূরণ করুন!');
+                return;
+            }
+
+            entries.push({ id: Date.now(), date, type, category, amount, note });
+            document.getElementById('category').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('note').value = '';
+            saveData();
+        }
+
+        // ওভারটাইম যোগ করার ফাংশন
+        function addOvertime() {
+            const otDate = document.getElementById('otDate').value;
+            const otDays = parseFloat(document.getElementById('otDays').value);
+            const otNote = document.getElementById('otNote').value;
+
+            if (!otDate || isNaN(otDays)) {
+                alert('তারিখ এবং ওভারটাইম দিন সংখ্যা দিন!');
+                return;
+            }
+
+            overtimes.push({ id: Date.now(), otDate, otDays, otNote });
+            document.getElementById('otDays').value = '';
+            document.getElementById('otNote').value = '';
+            saveData();
+        }
+
+        // লেনদেন যোগ করার ফাংশন
+        function addTransaction() {
+            const partyName = document.getElementById('partyName').value;
+            const txnType = document.getElementById('txnType').value;
+            const txnAmount = parseFloat(document.getElementById('txnAmount').value);
+            const txnDate = document.getElementById('txnDate').value;
+            const txnNote = document.getElementById('txnNameNote') || document.getElementById('txnNote').value;
+
+            if (!partyName || isNaN(txnAmount) || !txnDate) {
+                alert('সকল তথ্য সঠিকমতন দিন!');
+                return;
+            }
+
+            transactions.push({ id: Date.now(), partyName, txnType, txnAmount, txnDate, txnNote: document.getElementById('txnNote').value });
+            document.getElementById('partyName').value = '';
+            document.getElementById('txnAmount').value = '';
+            document.getElementById('txnNote').value = '';
+            saveData();
+        }
+
+        // ডিলিট ফাংশনসমূহ
+        function deleteEntry(id) {
+            entries = entries.filter(item => item.id !== id);
+            saveData();
+        }
+
+        function deleteOvertime(id) {
+            overtimes = overtimes.filter(item => item.id !== id);
+            saveData();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(item => item.id !== id);
+            saveData();
+        }
+
+        // ডিসপ্লে ও ক্যালকুলেশন আপডেট
+        function displayAll() {
+            const entryList = document.getElementById('entryList');
+            const otList = document.getElementById('otList');
+            const txnList = document.getElementById('txnList');
+
+            entryList.innerHTML = '';
+            otList.innerHTML = '';
+            txnList.innerHTML = '';
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            // আয়-ব্যয় রেন্ডার
+            entries.forEach(item => {
+                if (item.type === 'income') totalIncome += item.amount;
+                else totalExpense += item.amount;
+
+                entryList.innerHTML += `
+                    <tr>
+                        <td>${item.date}</td>
+                        <td style="color: ${item.type === 'income' ? 'green' : 'red'}; font-weight: bold;">${item.type === 'income' ? 'আয়' : 'ব্যয়'}</td>
+                        <td>${item.category}</td>
+                        <td>৳${item.amount}</td>
+                        <td>${item.note || '-'}</td>
+                        <td><button class="btn-danger" onclick="deleteEntry(${item.id})">ডিলিট</button></td>
+                    </tr>
+                `;
+            });
+
+            // ওভারটাইম রেন্ডার
+            overtimes.forEach(item => {
+                otList.innerHTML += `
+                    <tr>
+                        <td>${item.otDate}</td>
+                        <td>${item.otDays} দিন</td>
+                        <td>${item.otNote || '-'}</td>
+                        <td><button class="btn-danger" onclick="deleteOvertime(${item.id})">ডিলিট</button></td>
+                    </tr>
+                `;
+            });
+
+            // লেনদেন রেন্ডার
+            transactions.forEach(item => {
+                txnList.innerHTML += `
+                    <tr>
+                        <td>${item.txnDate}</td>
+                        <td>${item.partyName}</td>
+                        <td style="color: ${item.txnType === 'given' ? 'red' : 'green'}; font-weight: bold;">${item.txnType === 'given' ? 'দিয়েছি' : 'পেয়েছি'}</td>
+                        <td>৳${item.txnAmount}</td>
+                        <td>${item.txnNote || '-'}</td>
+                        <td><button class="btn-danger" onclick="deleteTransaction(${item.id})">ডিলিট</button></td>
+                    </tr>
+                `;
+            });
+
+            // সামারি আপডেট
+            document.getElementById('totalIncome').innerText = `৳${totalIncome}`;
+            document.getElementById('totalExpense').innerText = `৳${totalExpense}`;
+            document.getElementById('netBalance').innerText = `৳${totalIncome - totalExpense}`;
+        }
+
+        // পেজ লোড হলে ডাটা রেন্ডার করবে
+        window.onload = displayAll;
+    </script>
+</body>
+</html>
