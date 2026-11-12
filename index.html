@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -53,6 +54,14 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--in);outlin
 .nav{display:flex;gap:8px;margin-bottom:14px}
 .nav button{flex:1;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--muted);font:inherit;font-weight:700;cursor:pointer}
 .nav button.on{background:var(--head);color:var(--headink);border-color:var(--head)}
+  .foot{color:var(--muted);text-align:center;font-size:13px;padding:20px 8px 8px}
+  .loan-total{display:flex;gap:10px;margin:10px 0}
+  .loan-total>div{flex:1;background:var(--bg);border-radius:10px;padding:10px}
+  .loan-total b{display:block;font-size:18px}
+  .detail{width:100%;min-width:90px;padding:7px 5px;font-size:12px}
+  .loan-type{display:flex;gap:8px;margin-bottom:10px}
+  .loan-type button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-weight:700}
+  .loan-type button.on{background:var(--head);color:var(--headink)}
 .cyc{display:flex;align-items:center;gap:8px;margin:4px 0 12px}
 .cyc b{flex:1;text-align:center;font-size:16px}
 .cyc button{width:42px;height:42px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;font-size:20px;cursor:pointer}
@@ -81,12 +90,12 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
 .tk{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:transparent;font-size:17px;cursor:pointer;padding:0}
 .tk.on{background:var(--in);border-color:var(--in);color:var(--bg)}
 .tk.on.lv{background:#e0a100;border-color:#e0a100;color:#2b1d00}
-.ot{width:54px;padding:7px 4px;text-align:center}
+.ot{width:50px;padding:7px 2px;text-align:center}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><button type="button" id="n1" class="on">আয়-ব্যয়</button><button type="button" id="n2">অফিস হাজিরা</button></div>
+  <div class="nav"><button type="button" id="n1" class="on">আয়-ব্যয়</button><button type="button" id="n2">অফিস হাজিরা</button><button type="button" id="n3">লোন হিসাব</button></div>
 <section id="v1">
   <div class="top">
     <small id="mlabel">এই মাসের হিসাব</small>
@@ -133,7 +142,7 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
     <div><label for="s_start">সাইকেল শুরুর তারিখ</label><input id="s_start" type="number" inputmode="numeric" min="1" max="28"></div></div>
     <div class="two"><div><label for="s_lunch">লাঞ্চ বিল (প্রতিদিন)</label><input id="s_lunch" type="number" inputmode="decimal" min="0"></div>
     <div><label for="s_dinner">ডিনার বিল (প্রতিদিন)</label><input id="s_dinner" type="number" inputmode="decimal" min="0"></div></div>
-    <label for="s_ot">ওভারটাইম (প্রতি ঘণ্টা)</label><input id="s_ot" type="number" inputmode="decimal" min="0">
+    <label for="s_ot">ওভারটাইম (প্রতি দিন)</label><input id="s_ot" type="number" inputmode="decimal" min="0">
   </details>
   <div class="card sum" id="sm"></div>
   <h2>ক্যালেন্ডার</h2>
@@ -142,6 +151,26 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
   <h2>দৈনিক হিসাব</h2>
   <div class="card" style="padding:8px"><div style="overflow-x:auto"><table class="t" id="tb"></table></div></div>
 </section>
+<section id="v3" hidden>
+  <h2 style="margin-top:4px">লোন দেওয়া ও নেওয়া</h2>
+  <div class="card">
+    <div class="loan-type"><button type="button" id="loanGive" class="on">লোন দিয়েছি</button><button type="button" id="loanTake">লোন নিয়েছি</button></div>
+    <div class="two">
+      <div><label for="loanAmount">টাকার পরিমাণ</label><input id="loanAmount" type="number" inputmode="decimal" min="0" placeholder="০"></div>
+      <div><label for="loanDate">তারিখ</label><input id="loanDate" type="date"></div>
+    </div>
+    <label for="loanPerson">কার কাছ থেকে / কাকে</label><input id="loanPerson" type="text" placeholder="নাম লিখুন">
+    <label for="loanNote">বিবরণ</label><input id="loanNote" type="text" placeholder="লোনের কারণ বা অতিরিক্ত তথ্য">
+    <button type="button" class="add" id="loanAdd">সংরক্ষণ করুন</button>
+  </div>
+  <div class="bar" style="margin-top:22px"><h2 style="margin:0">লোনের হিসাব</h2><input type="month" id="loanMonth" aria-label="মাস বাছাই করুন"></div>
+  <div class="loan-total">
+    <div><small>মোট দিয়েছি</small><b class="out" id="loanGiven">৳ ০</b></div>
+    <div><small>মোট নিয়েছি</small><b class="in" id="loanTaken">৳ ০</b></div>
+  </div>
+  <div class="card" id="loanList"></div>
+</section>
+<div class="foot">Create by Mohammad Sawon</div>
 </div>
 
 <script>
@@ -263,12 +292,17 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
 
   function rSum(ds){
     ds=ds||span();var tk=key(new Date()),c={p:0,v:0,a:0,l:0,d:0,o:0};
-    ds.forEach(function(d){var k=key(d),x=D[k]||{};if(x.p)c.p++;else if(x.v)c.v++;else if(k<=tk)c.a++;if(x.l)c.l++;if(x.d)c.d++;c.o+=+x.ot||0});
+    ds.forEach(function(d){
+      var k=key(d),x=D[k]||{};
+      if(x.p)c.p++;else if(x.v)c.v++;else if(k<=tk)c.a++;
+      if(x.l)c.l++;if(x.d)c.d++;
+      c.o += parseFloat(x.otDays) || (x.o ? 1 : 0);
+    });
     var L=c.l*S.lunch,Di=c.d*S.dinner,O=c.o*S.ot,B=L+Di+O;
     var r=function(a,b,cl){return '<div'+(cl?' class="'+cl+'"':'')+'><span>'+a+'</span><span>'+b+'</span></div>'};
     $("sm").innerHTML=r("উপস্থিত",bn(c.p)+" দিন")+r("ছুটি",bn(c.v)+" দিন")+r("অনুপস্থিত",bn(c.a)+" দিন")+
       r("লাঞ্চ বিল ("+bn(c.l)+" দিন)",money(L),"tot")+r("ডিনার বিল ("+bn(c.d)+" দিন)",money(Di))+
-      r("ওভারটাইম ("+bn(c.o)+" ঘণ্টা)",money(O))+r("অফিস বিল মোট",money(B),"tot")+
+      r("ওভারটাইম ("+bn(c.o)+" দিন)",money(O))+r("অফিস বিল মোট",money(B),"tot")+
       r("মাসিক বেতন (১–৩১ তারিখ)",money(+S.salary||0))+r("সর্বমোট",money(B+(+S.salary||0)),"tot");
   }
   function rCal(ds){
@@ -277,7 +311,8 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
     for(var j=0;j<ds[0].getDay();j++)h+="<div></div>";
     ds.forEach(function(d,i){
       var k=key(d),x=D[k]||{},c=x.p?"p":x.v?"v":k<=tk?"a":"";
-      h+='<div class="c '+c+(k===tk?" t":"")+'">'+(i===0||d.getDate()===1?'<em>'+fmt(d,{month:"short"})+'</em>':"")+bn(d.getDate())+'<small>'+(x.l?"ল ":"")+(x.d?"ড ":"")+(x.ot>0?"ও":"")+'</small></div>';
+      var otDaysVal = parseFloat(x.otDays) || (x.o ? 1 : 0);
+      h+='<div class="c '+c+(k===tk?" t":"")+'">'+(i===0||d.getDate()===1?'<em>'+fmt(d,{month:"short"})+'</em>':"")+bn(d.getDate())+'<small>'+(x.l?"ল ":"")+(x.d?"ড ":"")+(otDaysVal>0?"ও":"")+'</small></div>';
     });
     $("cal").innerHTML=h;
   }
@@ -286,13 +321,16 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
     $("cl").textContent=fmt(ds[0],{day:"numeric",month:"long"})+" – "+fmt(ds[ds.length-1],{day:"numeric",month:"long",year:"numeric"});
     $("punch").className="punch"+(t.p?" done":"");
     $("punch").textContent=t.p?"✓ আজ হাজিরা হয়েছে"+(t.t?" · "+bn(t.t):""):"আজকের হাজিরা দিন";
-    var h='<tr><th rowspan="2">তারিখ</th><th rowspan="2">হাজিরা</th><th rowspan="2">ছুটি</th><th colspan="2">খাবার বিল</th><th rowspan="2" class="g">ওভার<br>টাইম</th></tr><tr><th>লাঞ্চ</th><th>ডিনার</th></tr>';
+    var h='<tr><th rowspan="2">তারিখ</th><th rowspan="2">হাজিরা</th><th rowspan="2">ছুটি</th><th colspan="2">খাবার বিল</th><th rowspan="2" class="g">ওভারটাইম<br>(দিন)</th><th rowspan="2">ওভারটাইম<br>বিবরণ</th><th rowspan="2">অফিস<br>বিবরণ</th></tr><tr><th>লাঞ্চ</th><th>ডিনার</th></tr>';
     ds.forEach(function(d){
       var k=key(d),x=D[k]||{};
       var b=function(f,l,c){return '<td><button type="button" class="tk'+(x[f]?" on":"")+(c||"")+'" data-k="'+k+'" data-f="'+f+'" aria-label="'+l+" "+bn(d.getDate())+'">✓</button></td>'};
+      var otVal = x.otDays !== undefined ? x.otDays : (x.o ? "1" : "");
       h+='<tr'+(d.getDay()===5?' class="fri"':'')+'><td><b>'+bn(d.getDate())+'</b> '+fmt(d,{weekday:"short"})+(x.t?'<br><small>'+bn(x.t)+'</small>':'')+'</td>'+
         b("p","হাজিরা")+b("v","ছুটি"," lv")+b("l","লাঞ্চ")+b("d","ডিনার")+
-        '<td class="g"><input class="ot" type="number" inputmode="decimal" min="0" step="0.5" placeholder="০" data-k="'+k+'" value="'+(x.ot||"")+'" aria-label="ওভারটাইম ঘণ্টা '+bn(d.getDate())+'"></td></tr>';
+        '<td class="g"><input class="ot" type="number" inputmode="decimal" min="0" step="0.5" placeholder="০" data-k="'+k+'" value="'+otVal+'" aria-label="ওভারটাইম দিন '+bn(d.getDate())+'"></td>'+
+        '<td><input class="otNote" type="text" placeholder="ওভারটাইম বিবরণ" data-k="'+k+'" value="'+(x.otNote||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'" style="width:100%;min-width:90px;padding:7px 5px;font-size:12px"></td>'+
+        '<td><input class="detail" type="text" placeholder="বিবরণ" data-k="'+k+'" value="'+(x.od||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'" aria-label="বিবরণ '+bn(d.getDate())+'"></td></tr>';
     });
     $("tb").innerHTML=h;
     rCal(ds);rSum(ds);
@@ -305,8 +343,21 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
     save();rAll();
   };
   $("tb").onchange=function(e){
-    var i=e.target;if(!i.classList.contains("ot"))return;
-    var x=D[i.dataset.k]||(D[i.dataset.k]={});x.ot=parseFloat(i.value)||0;save();rCal();rSum();
+    var i=e.target;
+    var k=i.dataset.k;
+    var x=D[k]||(D[k]={});
+    if(i.classList.contains("detail")){
+      x.od=i.value.trim();
+      save();
+    } else if(i.classList.contains("otNote")){
+      x.otNote=i.value.trim();
+      save();
+    } else if(i.classList.contains("ot")){
+      x.otDays=i.value.trim();
+      save();
+      rSum(span());
+      rCal(span());
+    }
   };
   $("punch").onclick=function(){
     var n=new Date(),k=key(n),x=D[k]||(D[k]={});
@@ -327,10 +378,41 @@ summary{font-weight:700;cursor:pointer;padding:8px 0}
     };
   });
   $("set").open=!(S.salary||S.lunch||S.dinner||S.ot);
-  function tab(n){$("v1").hidden=n!==1;$("v2").hidden=n!==2;$("n1").className=n===1?"on":"";$("n2").className=n===2?"on":"";}
-  $("n1").onclick=function(){tab(1)};$("n2").onclick=function(){tab(2)};
+  function tab(n){$("v1").hidden=n!==1;$("v2").hidden=n!==2;$("v3").hidden=n!==3;$("n1").className=n===1?"on":"";$("n2").className=n===2?"on":"";$("n3").className=n===3?"on":"";}
+  $("n1").onclick=function(){tab(1)};$("n2").onclick=function(){tab(2)};$("n3").onclick=function(){tab(3)};
   rAll();
+})();
+</script>
+<script>
+(function(){
+  var KEY="amar-hisab-loan-v1", rows=[], type="give";
+  var $=function(id){return document.getElementById(id)};
+  var bn=function(n){return String(n).replace(/\d/g,function(d){return "০১২৩৪৫৬৭৮৯"[d]})};
+  var money=function(n){return "৳ "+bn((Math.round(n*100)/100).toLocaleString("en-US"))};
+  function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+  try{rows=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){rows=[]}
+  $("loanDate").value=today();$("loanMonth").value=today().slice(0,7);
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}}
+  function setType(t){type=t;$("loanGive").className=t==="give"?"on":"";$("loanTake").className=t==="take"?"on":""}
+  $("loanGive").onclick=function(){setType("give")};$("loanTake").onclick=function(){setType("take")};
+  $("loanAdd").onclick=function(){
+    var amount=parseFloat($("loanAmount").value);if(!(amount>0)){$("loanAmount").focus();return}
+    rows.push({id:Date.now(),type:type,amount:amount,date:$("loanDate").value||today(),person:$("loanPerson").value.trim(),note:$("loanNote").value.trim()});
+    save();$("loanAmount").value="";$("loanPerson").value="";$("loanNote").value="";$("loanMonth").value=rows[rows.length-1].date.slice(0,7);render();
+  };
+  $("loanMonth").onchange=render;
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function render(){
+    var m=$("loanMonth").value||today().slice(0,7), list=rows.filter(function(x){return x.date.slice(0,7)===m}).sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:b.id-a.id});
+    var given=0,taken=0;list.forEach(function(x){if(x.type==="give")given+=x.amount;else taken+=x.amount});
+    $("loanGiven").textContent=money(given);$("loanTaken").textContent=money(taken);
+    if(!list.length){$("loanList").innerHTML='<div class="empty">এই মাসে কোনো লোনের তথ্য নেই।</div>';return}
+    $("loanList").innerHTML=list.map(function(x){return '<div class="item"><div class="m"><b>'+ (x.type==="give"?"দিয়েছি":"নিয়েছি")+' · '+esc(x.person||"নাম দেওয়া হয়নি")+'</b><span>'+bn(x.date.slice(8,10))+"/"+bn(x.date.slice(5,7))+(x.note?" · "+esc(x.note):"")+'</span></div><div class="amt '+(x.type==="in"?"in":"out")+'">'+money(x.amount)+'</div><button class="del" data-id="'+x.id+'" aria-label="মুছুন">×</button></div>'}).join("");
+  }
+  $("loanList").onclick=function(e){var id=e.target.getAttribute&&e.target.getAttribute("data-id");id&&confirm("এই লোনের তথ্য মুছে ফেলবেন?")&&(rows=rows.filter(function(x){return String(x.id)!==id}),save(),render());};
+  render();
 })();
 </script>
 </body>
 </html>
+```
